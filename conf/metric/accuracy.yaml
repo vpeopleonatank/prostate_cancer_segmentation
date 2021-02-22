@@ -1,0 +1,5 @@
+# @package _group_
+class_name: pytorch_lightning.metrics.classification.Accuracy
+metric_name: accuracy
+params:
+  threshold: 0.5
