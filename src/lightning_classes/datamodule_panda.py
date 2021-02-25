@@ -72,28 +72,29 @@ class PANDADataModule(pl.LightningDataModule):
         self.train_image_path = self.cfg.datamodule.train_image_path
         self.train_labels_path = self.cfg.datamodule.train_labels_path
 
-        masks = os.listdir(self.BASE_PATH + self.train_image_path)
-        images = os.listdir(self.BASE_PATH + self.train_labels_path)
+        # images = os.listdir(self.BASE_PATH + self.train_image_path)
+        masks = os.listdir(self.BASE_PATH + self.train_labels_path)
         df_masks = pd.Series(masks).to_frame()
         df_masks.columns = ['mask_file_name']
         df_masks['image_id'] = df_masks.mask_file_name.apply(lambda x: x.split('_')[0])
         self.df_train = pd.merge(train, df_masks, on='image_id', how='outer')
         del df_masks
 
-        # gleason_replace_dict = {0:0, 1:1, 3:2, 4:3, 5:4}
+        gleason_replace_dict = {0:0, 1:1, 3:2, 4:3, 5:4}
 
-        # def process_gleason(gleason):
-        #     if gleason == 'negative': gs = (1, 1)
-        #     else: gs = tuple(gleason.split('+'))
-        #     return [gleason_replace_dict[int(g)] for g in gs]
+        def process_gleason(gleason):
+            if gleason == 'negative': gs = (1, 1)
+            else: gs = tuple(gleason.split('+'))
+            return [gleason_replace_dict[int(g)] for g in gs]
 
-        # df_train.gleason_score = df_train.gleason_score.apply(process_gleason)
+        self.df_train.gleason_score = self.df_train.gleason_score.apply(process_gleason)
         self.df_train['gleason_primary'] = ''
         self.df_train['gleason_secondary'] = ''
 
         for idx in range(0, len(self.df_train.gleason_score)):
             self.df_train['gleason_primary'][idx] = self.df_train['gleason_score'][idx][0]
             self.df_train['gleason_secondary'][idx] = self.df_train['gleason_score'][idx][1]
+
             
         self.df_train = self.df_train.drop(['gleason_score'], axis=1)
         self.df_train.dropna(subset=['mask_file_name'], inplace=True, axis=0)
