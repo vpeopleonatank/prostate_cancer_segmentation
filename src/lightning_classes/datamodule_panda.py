@@ -48,7 +48,10 @@ class PANDADataset(Dataset):
         big_img = big_img.transpose(2, 0, 1)
         big_mask = cv2.imread(file_path_label, cv2.IMREAD_UNCHANGED)
 
-        return torch.tensor(big_img), torch.tensor(big_mask)
+        big_img_tensor = transforms.ToTensor()(big_img)
+        big_mask_tensor = torch.from_numpy(big_mask)
+
+        return big_img_tensor, big_mask_tensor.long()
 
 
 class PANDADataModule(pl.LightningDataModule):
