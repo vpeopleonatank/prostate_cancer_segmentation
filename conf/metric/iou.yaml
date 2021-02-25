@@ -1,0 +1,5 @@
+# @package _group_
+class_name: src.metrics.iou.Iou
+metric_name: iou
+params:
+  num_classes: ${training.n_classes}

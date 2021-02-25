@@ -1,19 +1,19 @@
 defaults:
-  - datamodule: image_classification
+  - datamodule: mnist_image_classification
   - trainer: default_trainer
   - training: default_training
   - logging: loggers
   - optimizer: adamw
-  - scheduler: plateau
-  - model: simple_model
+  - scheduler: disabled
+  - model: seg_model
   - callbacks: callbacks
   - private: default
   - augmentation: basic_augs
   - loss: cross_entropy
-  - metric: accuracy
+  - metric: iou
   - inference: basic
-  - hydra/hydra_logging: disabled
-  # - hydra/job_logging: disabled
+  # - hydra/hydra_logging: colorlog
+  # - hydra/job_logging: colorlog
 
 general:
   logs_folder_name: logs
@@ -23,11 +23,11 @@ general:
   log_code: True
   save_pytorch_model: True
   save_best: True
-  convert_to_jit: True
+  convert_to_jit: False
 
 hydra:
   run:
-    dir: outputs/${now:%Y-%m-%d_%H-%M-%S} #_${hydra.job.override_dirname}
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}_${hydra.job.override_dirname}
   sweep:
     dir: outputs/${now:%Y-%m-%d_%H-%M-%S}
     subdir: ${hydra.job.override_dirname}
