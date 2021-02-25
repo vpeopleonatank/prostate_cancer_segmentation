@@ -26,7 +26,7 @@ def run(cfg: DictConfig) -> None:
     run_name = os.path.basename(os.getcwd())
     hparams = flatten_omegaconf(cfg)
 
-    cfg.callbacks.model_checkpoint.params.filepath = os.getcwd() + cfg.callbacks.model_checkpoint.params.filepath
+    cfg.callbacks.model_checkpoint.params.dirpath = os.getcwd() + cfg.callbacks.model_checkpoint.params.dirpath
     callbacks = []
     for callback in cfg.callbacks.other_callbacks:
         if callback.params:
