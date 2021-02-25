@@ -45,7 +45,6 @@ class PANDADataset(Dataset):
 
         big_img = cv2.imread(file_path)
         big_img = cv2.cvtColor(big_img, cv2.COLOR_BGR2RGB)
-        big_img = big_img.transpose(2, 0, 1)
         big_mask = cv2.imread(file_path_label, cv2.IMREAD_UNCHANGED)
 
         big_img_tensor = transforms.ToTensor()(big_img)
