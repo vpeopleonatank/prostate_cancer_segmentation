@@ -5,6 +5,7 @@ import torch
 from omegaconf import DictConfig
 
 from src.utils.technical_utils import load_obj
+from src.losses.losses import CrossEntropy2D
 
 
 class LitSemanticSegmentation(pl.LightningModule):
@@ -12,7 +13,9 @@ class LitSemanticSegmentation(pl.LightningModule):
         super(LitSemanticSegmentation, self).__init__()
         self.cfg = cfg
         self.hparams: Dict[str, float] = hparams
-        self.model = load_obj(cfg.model.class_name)(cfg=cfg)
+        self.model = load_obj(cfg.model.class_name)(**self.cfg.model.params)
+
+        self.cross_entropy_loss = CrossEntropy2D(loss_per_image=True, ignore_index=255)
         self.loss = load_obj(cfg.loss.class_name)()
         if not cfg.metric.params:
             self.metric = load_obj(cfg.metric.class_name)()
@@ -42,7 +45,7 @@ class LitSemanticSegmentation(pl.LightningModule):
         optimizer = load_obj(self.cfg.optimizer.class_name)(self.model.parameters(), **self.cfg.optimizer.params)
         ret_opt = {"optimizer": optimizer}
 
-        if self.cfg.scheduler.class_name is not None:
+        if self.cfg.scheduler.class_name != 'None':
             sch = load_obj(self.cfg.scheduler.class_name)(optimizer, **self.cfg.scheduler.params)
 
             if sch is not None:
@@ -61,69 +64,69 @@ class LitSemanticSegmentation(pl.LightningModule):
         return ret_opt
 
     def training_step(self, batch, *args, **kwargs):  # type: ignore
-        # TODO: one method for train/val step/epoch
-        image = batch['image']
-        logits = self(image)
 
-        target = batch['target']
-        shuffled_target = batch.get('shuffled_target')
-        lam = batch.get('lam')
-        if shuffled_target is not None:
-            loss = self.loss(logits, (target, shuffled_target, lam)).view(1)
-        else:
-            loss = self.loss(logits, target)
-        score = self.metric(logits.argmax(1), target)
-        logs = {'train_loss': loss, f'train_{self.cfg.training.metric}': score}
+        """Defines the train loop. It is independent of forward().
+        Don’t use any cuda or .to(device) calls in the code. PL will move the tensors to the correct device.
+        """
+        inputs, labels = batch
+        outputs = self.model(inputs)
+        predictions = outputs.argmax(dim=1)
+
+        # Calculate Loss
+        loss = self.cross_entropy_loss(outputs, labels)
+        logs = {'train_loss': loss}
+
+        """Log the value on GPU0 per step. Also log average of all steps at epoch_end."""
+        self.log("Train/loss", loss, on_step=True, on_epoch=True)
+        """Log the avg. value across all GPUs per step. Also log average of all steps at epoch_end.
+        Alternately, you can use the ops 'sum' or 'avg'.
+        Using sync_dist is efficient. It adds extremely minor overhead for scalar values.
+        """
+        # self.log("Train/loss", loss, on_step=True, on_epoch=True, sync_dist=True, sync_dist_op="avg")
+
+        # Calculate Metrics
+        self.iou_train(predictions, labels)
         return {
             'loss': loss,
-            'log': logs,
             'progress_bar': logs,
-            'logits': logits,
-            'target': target,
-            f'train_{self.cfg.training.metric}': score,
         }
 
     def training_epoch_end(self, outputs):
-        avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
-        y_true = torch.cat([x['target'] for x in outputs])
-        y_pred = torch.cat([x['logits'] for x in outputs])
-        score = self.metric(y_pred.argmax(1), y_true)
-
-        # score = torch.tensor(1.0, device=self.device)
-
-        logs = {'train_loss': avg_loss, f'train_{self.cfg.training.metric}': score}
-        return {'log': logs, 'progress_bar': logs}
+        metrics_avg = self.iou_train.compute()
+        self.log("Train/mIoU", metrics_avg.miou)
+        self.iou_train.reset()
+        logs = {'train_iou': metrics_avg.miou}
+        return {
+            'progress_bar': logs,
+        }
 
     def validation_step(self, batch, *args, **kwargs):  # type: ignore
-        image = batch['image']
-        logits = self(image)
 
-        target = batch['target']
-        shuffled_target = batch.get('shuffled_target')
-        lam = batch.get('lam')
-        if shuffled_target is not None:
-            loss = self.loss(logits, (target, shuffled_target, lam), train=False).view(1)
-        else:
-            loss = self.loss(logits, target)
-        score = self.metric(logits.argmax(1), target)
-        logs = {'valid_loss': loss, f'valid_{self.cfg.training.metric}': score}
+        inputs, labels = batch
+        outputs = self.model(inputs)
+        predictions = outputs.argmax(dim=1)
+
+        # Calculate Loss
+        loss = self.cross_entropy_loss(outputs, labels)
+        self.log("Val/loss", loss)
+
+        # Calculate Metrics
+        self.iou_val(predictions, labels)
+
+        logs = {'valid_loss': loss}
 
         return {
-            'loss': loss,
-            'log': logs,
+            'val_loss': loss,
             'progress_bar': logs,
-            'logits': logits,
-            'target': target,
-            f'valid_{self.cfg.training.metric}': score,
         }
 
     def validation_epoch_end(self, outputs):
-        avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
-        y_true = torch.cat([x['target'] for x in outputs])
-        y_pred = torch.cat([x['logits'] for x in outputs])
-        score = self.metric(y_pred.argmax(1), y_true)
-
-        # score = torch.tensor(1.0, device=self.device)
-        logs = {'valid_loss': avg_loss, f'valid_{self.cfg.training.metric}': score, self.cfg.training.metric: score}
-        return {'valid_loss': avg_loss, 'log': logs, 'progress_bar': logs}
+        # Compute and log metrics across epoch
+        metrics_avg = self.iou_val.compute()
+        self.log("Val/mIoU", metrics_avg.miou)
+        self.iou_val.reset()
+        logs = {'val_iou': metrics_avg.miou}
+        return {
+            'progress_bar': logs,
+        }
 

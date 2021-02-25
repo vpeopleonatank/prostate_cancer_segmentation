@@ -1,0 +1,10 @@
+# @package _group_
+data_module_name: src.lightning_classes.datamodule_mnist.MNISTDataModule
+base_image_path: /content/drive/MyDrive/Data/PANDA_data/
+train_image_path: train_images/
+train_labels_path: train_label_masks/
+train_csv: train.csv
+test_csv: test.csv
+
+batch_size: 512
+valid_size: 0.2

@@ -1,7 +1,7 @@
 defaults:
-  - datamodule: mnist_image_classification
+  - datamodule: panda_dataset
   - trainer: default_trainer
-  - training: default_training
+  - training: seg_training
   - logging: loggers
   - optimizer: adamw
   - scheduler: disabled

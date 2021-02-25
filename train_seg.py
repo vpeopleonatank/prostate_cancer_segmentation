@@ -51,9 +51,6 @@ def run(cfg: DictConfig) -> None:
         callbacks=callbacks,
         **cfg.trainer,
     )
-
-    if cfg.scheduler.class_name is not None:
-        print(type(cfg.scheduler.class_name))
     model = load_obj(cfg.training.lightning_module_name)(hparams=hparams, cfg=cfg)
     dm = load_obj(cfg.datamodule.data_module_name)(hparams=hparams, cfg=cfg)
     trainer.fit(model, dm)
