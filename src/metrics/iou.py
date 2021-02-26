@@ -2,6 +2,14 @@ import torch
 from pytorch_lightning import metrics
 
 
+class IouMetric:
+    iou_per_class: torch.Tensor
+    miou: torch.Tensor  # Mean IoU across all classes
+    accuracy: torch.Tensor
+    precision: torch.Tensor
+    recall: torch.Tensor
+    specificity: torch.Tensor
+
 class Iou(metrics.Metric):
     def __init__(self, num_classes: int = 11, normalize: bool = False):
         """Calculates the metrics iou, true positives and false positives/negatives for multi-class classification
