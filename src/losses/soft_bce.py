@@ -1,4 +1,5 @@
-from typing import Optional
+ # type: ignore
+from typing import Optional, Union
 
 import torch
 import torch.nn.functional as F
@@ -56,7 +57,7 @@ class SoftBCEWithLogitsLoss(nn.Module):
             soft_targets = y_true
 
         loss = F.binary_cross_entropy_with_logits(
-            y_pred, soft_targets, self.weight, pos_weight=self.pos_weight, reduction="none"
+            y_pred, soft_targets, self.weight , pos_weight=self.pos_weight, reduction="none"
         )
 
         if self.ignore_index is not None:

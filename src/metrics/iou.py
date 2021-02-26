@@ -1,3 +1,4 @@
+ # type: ignore
 import torch
 from pytorch_lightning import metrics
 
@@ -10,7 +11,8 @@ class IouMetric:
     recall: torch.Tensor
     specificity: torch.Tensor
 
-    def __init__(self,
+    def __init__(
+        self,
         iou_per_class: torch.Tensor,
         miou: torch.Tensor,
         accuracy: torch.Tensor,
@@ -24,7 +26,6 @@ class IouMetric:
         self.precision = precision
         self.recall = recall
         self.specificity = specificity
-
 
 
 class Iou(metrics.Metric):

@@ -14,5 +14,7 @@ def test_schedulers(sch_name: str) -> None:
         cfg = compose(
             config_name='config', overrides=[f'scheduler={scheduler_name}', 'optimizer=sgd', 'private=default']
         )
+        if cfg.scheduler.class_name == "None":
+            pytest.skip("None class")
         optimizer = load_obj(cfg.optimizer.class_name)(torch.nn.Linear(1, 1).parameters(), **cfg.optimizer.params)
         load_obj(cfg.scheduler.class_name)(optimizer, **cfg.scheduler.params)

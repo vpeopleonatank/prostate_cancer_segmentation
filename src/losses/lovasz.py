@@ -1,3 +1,4 @@
+# type: ignore
 """
 Lovasz-Softmax and Jaccard hinge loss in PyTorch
 Maxim Berman 2018 ESAT-PSI KU Leuven (MIT License)
@@ -13,7 +14,7 @@ from torch.nn.modules.loss import _Loss
 from .constants import BINARY_MODE, MULTICLASS_MODE, MULTILABEL_MODE
 
 try:
-    from itertools import ifilterfalse
+    from itertools import ifilterfalse 
 except ImportError:  # py3k
     from itertools import filterfalse as ifilterfalse
 
