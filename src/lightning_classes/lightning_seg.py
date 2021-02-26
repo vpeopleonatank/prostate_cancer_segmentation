@@ -22,6 +22,10 @@ class LitSemanticSegmentation(pl.LightningModule):
         else:
             self.metric = load_obj(cfg.metric.class_name)(**cfg.metric.params)
 
+        self.iou_train = metrics.Iou(num_classes=self.cfg.training.n_classes)
+        self.iou_val = metrics.Iou(num_classes=self.cfg.training.n_classes)
+        self.iou_test = metrics.Iou(num_classes=self.cfg.training.n_classes)
+
     def forward(self, x, *args, **kwargs):
         return self.model(x)
 
