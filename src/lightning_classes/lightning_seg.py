@@ -73,7 +73,7 @@ class LitSemanticSegmentation(pl.LightningModule):
         predictions = outputs.argmax(dim=1)
 
         # Calculate Loss
-        loss = self.cross_entropy_loss(outputs, labels)
+        loss = self.loss(outputs, labels)
         logs = {'train_loss': loss}
 
         """Log the value on GPU0 per step. Also log average of all steps at epoch_end."""
@@ -107,7 +107,7 @@ class LitSemanticSegmentation(pl.LightningModule):
         predictions = outputs.argmax(dim=1)
 
         # Calculate Loss
-        loss = self.cross_entropy_loss(outputs, labels)
+        loss = self.loss(outputs, labels)
         self.log("Val/loss", loss)
 
         # Calculate Metrics
