@@ -1,4 +1,4 @@
- # type: ignore
+# type: ignore
 import torch
 from pytorch_lightning import metrics
 
