@@ -7,6 +7,7 @@ from omegaconf import DictConfig
 
 from src.utils.technical_utils import load_obj
 from src.losses.losses import CrossEntropy2D
+from src.metrics.iou import Iou
 
 
 class LitSemanticSegmentation(pl.LightningModule):
@@ -22,9 +23,9 @@ class LitSemanticSegmentation(pl.LightningModule):
         else:
             self.metric = load_obj(cfg.metric.class_name)(**cfg.metric.params)
 
-        self.iou_train = metrics.Iou(num_classes=self.cfg.training.n_classes)
-        self.iou_val = metrics.Iou(num_classes=self.cfg.training.n_classes)
-        self.iou_test = metrics.Iou(num_classes=self.cfg.training.n_classes)
+        self.iou_train = Iou(num_classes=self.cfg.training.n_classes)
+        self.iou_val = Iou(num_classes=self.cfg.training.n_classes)
+        self.iou_test = Iou(num_classes=self.cfg.training.n_classes)
 
     def forward(self, x, *args, **kwargs):
         return self.model(x)
