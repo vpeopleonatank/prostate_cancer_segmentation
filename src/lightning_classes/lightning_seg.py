@@ -2,6 +2,7 @@ from typing import Dict, Union
 
 import pytorch_lightning as pl
 import torch
+import torch.nn as nn
 from omegaconf import DictConfig
 
 from src.utils.technical_utils import load_obj
@@ -15,7 +16,6 @@ class LitSemanticSegmentation(pl.LightningModule):
         self.hparams: Dict[str, float] = hparams
         self.model = load_obj(cfg.model.class_name)(**self.cfg.model.params)
 
-        self.cross_entropy_loss = CrossEntropy2D(loss_per_image=True, ignore_index=255)
         self.loss = load_obj(cfg.loss.class_name)()
         if not cfg.metric.params:
             self.metric = load_obj(cfg.metric.class_name)()

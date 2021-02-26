@@ -1,7 +1,7 @@
 from typing import Tuple
 
 import torch
-import torch.functional as F
+import torch.nn.functional as F
 from torch import nn
 
 
@@ -54,6 +54,7 @@ class MixupLoss:
         return loss
 
 
+# Temporarily not work
 class CrossEntropy2D(nn.CrossEntropyLoss):
     """Use the torch.nn.CrossEntropyLoss loss to calculate mean loss per image or per pixel.
     Deeplab models calculate mean loss per image.

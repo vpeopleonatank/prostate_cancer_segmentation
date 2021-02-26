@@ -1,0 +1,5 @@
+# @package _group_
+class_name: src.losses.soft_ce.SoftCrossEntropyLoss
+params:
+  smooth_factor: 0.1
+  # ignore_index: None
