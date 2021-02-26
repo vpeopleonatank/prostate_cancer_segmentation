@@ -76,37 +76,9 @@ class PANDADataModule(pl.LightningDataModule):
         train_images_absolute_path = self.BASE_PATH + self.train_image_path
         train_labels_absolute_path = self.BASE_PATH + self.train_labels_path
 
-        # images = os.listdir(self.BASE_PATH + self.train_image_path)
-        masks = os.listdir(self.BASE_PATH + self.train_labels_path)
-        df_masks = pd.Series(masks).to_frame()
-        df_masks.columns = ['mask_file_name']
-        df_masks['image_id'] = df_masks.mask_file_name.apply(lambda x: x.split('_')[0])
-        self.df_train = pd.merge(train, df_masks, on='image_id', how='outer')
-        del df_masks
 
-        gleason_replace_dict = {0:0, 1:1, 3:2, 4:3, 5:4}
-
-        def process_gleason(gleason):
-            if gleason == 'negative': gs = (1, 1)
-            else: gs = tuple(gleason.split('+'))
-            return [gleason_replace_dict[int(g)] for g in gs]
-
-        self.df_train.gleason_score = self.df_train.gleason_score.apply(process_gleason)
-        self.df_train['gleason_primary'] = ''
-        self.df_train['gleason_secondary'] = ''
-
-        for idx in range(0, len(self.df_train.gleason_score)):
-            self.df_train['gleason_primary'][idx] = self.df_train['gleason_score'][idx][0]
-            self.df_train['gleason_secondary'][idx] = self.df_train['gleason_score'][idx][1]
-
-            
-        self.df_train = self.df_train.drop(['gleason_score'], axis=1)
-        self.df_train.dropna(subset=['mask_file_name'], inplace=True, axis=0)
-
-        radbound_indexs = self.df_train[self.df_train['data_provider'] == 'karolinska'].index
-        radbound_df_train = self.df_train.drop(radbound_indexs)
-        X = radbound_df_train.drop(['isup_grade'], axis=1)
-        Y = radbound_df_train['mask_file_name']
+        X = self.train_df.drop(['isup_grade'], axis=1)
+        Y = self.train_df['mask_file_name']
         self.X_train, self.X_valid, self.y_train, self.y_valid = train_test_split(X ,Y, test_size=self.cfg.datamodule.valid_size, random_state=1234)
 
         # Assign train/val datasets for use in dataloaders

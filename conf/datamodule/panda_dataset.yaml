@@ -3,7 +3,7 @@ data_module_name: src.lightning_classes.datamodule_panda.PANDADataModule
 base_image_path: /content/drive/MyDrive/Data/PANDA_data/
 train_image_path: train_images_concat_512/
 train_labels_path: train_labels_concat_512/
-train_csv: train.csv
+train_csv: radbound_train.csv
 test_csv: test.csv
 
 batch_size: 2
