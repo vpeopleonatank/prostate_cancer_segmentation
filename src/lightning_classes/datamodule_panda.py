@@ -69,22 +69,26 @@ class PANDADataModule(pl.LightningDataModule):
         self.BASE_PATH = self.cfg.datamodule.base_image_path
 
         self.train_df = pd.read_csv(self.BASE_PATH + self.cfg.datamodule.train_csv)
-        train = self.train_df.copy()
         self.test_df = pd.read_csv(self.BASE_PATH + self.cfg.datamodule.test_csv)
         self.train_image_path = self.cfg.datamodule.train_image_path
         self.train_labels_path = self.cfg.datamodule.train_labels_path
         train_images_absolute_path = self.BASE_PATH + self.train_image_path
         train_labels_absolute_path = self.BASE_PATH + self.train_labels_path
 
-
         X = self.train_df.drop(['isup_grade'], axis=1)
         Y = self.train_df['mask_file_name']
-        self.X_train, self.X_valid, self.y_train, self.y_valid = train_test_split(X ,Y, test_size=self.cfg.datamodule.valid_size, random_state=1234)
+        self.X_train, self.X_valid, self.y_train, self.y_valid = train_test_split(
+            X, Y, test_size=self.cfg.datamodule.valid_size, random_state=1234
+        )
 
         # Assign train/val datasets for use in dataloaders
         if stage == 'fit' or stage is None:
-            self.panda_train = PANDADataset(self.X_train, self.y_train, train_images_absolute_path, train_labels_absolute_path) 
-            self.panda_val = PANDADataset(self.X_valid, self.y_valid, train_images_absolute_path, train_labels_absolute_path) 
+            self.panda_train = PANDADataset(
+                self.X_train, self.y_train, train_images_absolute_path, train_labels_absolute_path
+            )
+            self.panda_val = PANDADataset(
+                self.X_valid, self.y_valid, train_images_absolute_path, train_labels_absolute_path
+            )
 
         # if stage == 'test' or stage is None:
         #     self.mnist_test = MNIST(self.data_dir, train=False, transform=self.transform)

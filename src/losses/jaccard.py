@@ -10,14 +10,13 @@ __all__ = ["JaccardLoss"]
 
 
 class JaccardLoss(_Loss):
-
     def __init__(
         self,
         mode: str,
         classes: Optional[List[int]] = None,
         log_loss: bool = False,
         from_logits: bool = True,
-        smooth: float = 0.,
+        smooth: float = 0.0,
         eps: float = 1e-7,
     ):
         """Implementation of Jaccard loss for image segmentation task.
@@ -30,7 +29,7 @@ class JaccardLoss(_Loss):
             from_logits: If True, assumes input is raw logits
             smooth: Smoothness constant for dice coefficient
             ignore_index: Label that indicates ignored pixels (does not contribute to loss)
-            eps: A small epsilon for numerical stability to avoid zero division error 
+            eps: A small epsilon for numerical stability to avoid zero division error
                 (denominator will be always greater or equal to eps)
 
         Shape

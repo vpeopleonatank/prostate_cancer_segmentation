@@ -100,10 +100,10 @@ class LitSemanticSegmentation(pl.LightningModule):
         metrics_avg = self.iou_train.compute()
         self.log("Train/mIoU", metrics_avg.miou)
         self.iou_train.reset()
-        logs = {'train_iou': metrics_avg.miou}
-        return {
-            'progress_bar': logs,
-        }
+        # logs = {'train_iou': metrics_avg.miou}
+        # return {
+        #     'progress_bar': logs,
+        # }
 
     def validation_step(self, batch, *args, **kwargs):  # type: ignore
 
@@ -134,4 +134,3 @@ class LitSemanticSegmentation(pl.LightningModule):
         return {
             'progress_bar': logs,
         }
-

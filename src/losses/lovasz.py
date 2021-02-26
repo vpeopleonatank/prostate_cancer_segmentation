@@ -141,8 +141,7 @@ def _lovasz_softmax_flat(probas, labels, classes="present"):
 
 
 def _flatten_probas(probas, labels, ignore=None):
-    """Flattens predictions in the batch
-    """
+    """Flattens predictions in the batch"""
     if probas.dim() == 3:
         # assumes output of a sigmoid layer
         B, H, W = probas.size()
@@ -167,8 +166,7 @@ def isnan(x):
 
 
 def mean(values, ignore_nan=False, empty=0):
-    """Nanmean compatible with generators.
-    """
+    """Nanmean compatible with generators."""
     values = iter(values)
     if ignore_nan:
         values = ifilterfalse(isnan, values)
@@ -201,7 +199,7 @@ class LovaszLoss(_Loss):
             mode: Loss mode 'binary', 'multiclass' or 'multilabel'
             ignore_index: Label that indicates ignored pixels (does not contribute to loss)
             per_image: If True loss computed per each image and then averaged, else computed per whole batch
-        
+
         Shape
              - **y_pred** - torch.Tensor of shape (N, C, H, W)
              - **y_true** - torch.Tensor of shape (N, H, W) or (N, C, H, W)
@@ -222,7 +220,7 @@ class LovaszLoss(_Loss):
             loss = _lovasz_hinge(y_pred, y_true, per_image=self.per_image, ignore=self.ignore_index)
         elif self.mode == MULTICLASS_MODE:
             y_pred = y_pred.softmax(dim=1)
-            loss = _lovasz_softmax(y_pred, y_true, per_image=self.per_image, ignore=self.ignore_index)    
+            loss = _lovasz_softmax(y_pred, y_true, per_image=self.per_image, ignore=self.ignore_index)
         else:
             raise ValueError("Wrong mode {}.".format(self.mode))
         return loss

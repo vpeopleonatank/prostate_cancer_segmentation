@@ -10,6 +10,23 @@ class IouMetric:
     recall: torch.Tensor
     specificity: torch.Tensor
 
+    def __init__(self,
+        iou_per_class: torch.Tensor,
+        miou: torch.Tensor,
+        accuracy: torch.Tensor,
+        precision: torch.Tensor,
+        recall: torch.Tensor,
+        specificity: torch.Tensor,
+    ) -> None:
+        self.iou_per_class = iou_per_class
+        self.miou = miou
+        self.accuracy = accuracy
+        self.precision = precision
+        self.recall = recall
+        self.specificity = specificity
+
+
+
 class Iou(metrics.Metric):
     def __init__(self, num_classes: int = 11, normalize: bool = False):
         """Calculates the metrics iou, true positives and false positives/negatives for multi-class classification
@@ -27,7 +44,7 @@ class Iou(metrics.Metric):
         super().__init__(compute_on_step=False, dist_sync_on_step=False)
 
         self.num_classes = num_classes
-        # Metric normally calculated on batch. If true, final metrics (tp, fn, etc) will reflect average values per image
+        # Metric normally calculated on batch. If true, final metrics (tp, fn, etc) will reflect average values per image # noqa: E501
         self.normalize = normalize
 
         self.acc_confusion_matrix = None  # The accumulated confusion matrix
