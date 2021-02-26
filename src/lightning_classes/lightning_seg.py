@@ -16,7 +16,7 @@ class LitSemanticSegmentation(pl.LightningModule):
         self.hparams: Dict[str, float] = hparams
         self.model = load_obj(cfg.model.class_name)(**self.cfg.model.params)
 
-        self.loss = load_obj(cfg.loss.class_name)()
+        self.loss = load_obj(cfg.loss.class_name)(**self.cfg.loss.params)
         if not cfg.metric.params:
             self.metric = load_obj(cfg.metric.class_name)()
         else:
