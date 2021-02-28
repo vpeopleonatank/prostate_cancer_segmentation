@@ -48,7 +48,7 @@ class PANDADataset(Dataset):
         big_mask = cv2.imread(file_path_label, cv2.IMREAD_UNCHANGED)
 
         big_img_tensor = transforms.ToTensor()(big_img)
-        big_mask_tensor = torch.from_numpy(big_mask)
+        big_mask_tensor = torch.from_numpy(big_mask[:, :, 0])
 
         return big_img_tensor, big_mask_tensor.long()
 
