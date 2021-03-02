@@ -16,7 +16,7 @@ model_checkpoint:
     monitor: Val/mIoU
     save_top_k: -1
     dirpath: saved_models
-    filename: ${epoch:02d}-{Val/mIoU:.2f}
+    filename: "{epoch:02d}-{Val/mIoU:.2f}"
     mode: ${training.mode}
 
 other_callbacks:
