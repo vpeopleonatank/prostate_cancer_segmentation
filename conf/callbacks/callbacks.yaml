@@ -13,9 +13,10 @@ model_checkpoint:
   class_name: pytorch_lightning.callbacks.ModelCheckpoint
   params:
     # monitor: ${training.metric}
-    monitor: Train/mIoU
+    monitor: Val/mIoU
     save_top_k: -1
-    dirpath: saved_models/{epoch}_{${training.metric}:.4f}
+    dirpath: saved_models
+    filename: ${epoch:02d}-{Val/mIoU:.2f}
     mode: ${training.mode}
 
 other_callbacks:

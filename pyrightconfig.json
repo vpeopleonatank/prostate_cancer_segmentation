@@ -2,7 +2,7 @@
     "executionEnvironments": [
         {"root": "."}
     ],
-  "python.analysis.typeCheckingMode": "none"
+  "python.analysis.typeCheckingMode": "off"
 
 	}
   

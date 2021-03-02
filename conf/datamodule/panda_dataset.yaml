@@ -6,5 +6,5 @@ train_labels_path: train_size512_masks/
 train_csv: radbound_train.csv
 test_csv: test.csv
 
-batch_size: 2
+batch_size: 4
 valid_size: 0.2
