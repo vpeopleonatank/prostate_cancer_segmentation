@@ -51,7 +51,7 @@ def run(cfg: DictConfig) -> None:
         callbacks=callbacks,
         **cfg.trainer,
     )
-    if cfg.general.resume_from_path is None:
+    if cfg.general.resume_from_path is False:
         model = load_obj(cfg.training.lightning_module_name)(hparams=hparams, cfg=cfg)
     else:
         model = load_obj(cfg.training.lightning_module_name).load_from_checkpoint(cfg.general.resume_from_path,
