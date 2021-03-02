@@ -1,6 +1,7 @@
 from typing import Callable
 
 import torch
+from torch.optim.optimizer import Optimizer
 from torch.optim.lr_scheduler import LambdaLR
 
 
@@ -10,7 +11,7 @@ class LambdaLRConfig(LambdaLR):
     https://pytorch.org/docs/stable/_modules/torch/optim/lr_scheduler.html#LambdaLR
     """
 
-    def __init__(self, optimizer: torch.optim.Optimizer, lr_lambda: str, last_epoch: int = -1) -> None:
+    def __init__(self, optimizer: Optimizer, lr_lambda: str, last_epoch: int = -1) -> None:
         lr_lambda_: Callable = eval(lr_lambda)
         self.optimizer = optimizer
 

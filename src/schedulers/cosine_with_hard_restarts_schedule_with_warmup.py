@@ -1,6 +1,7 @@
 import math
 
 import torch
+from torch.optim.optimizer import Optimizer
 from torch.optim.lr_scheduler import LambdaLR
 
 
@@ -13,7 +14,7 @@ class CosineWithHardRestartsScheduleWithWarmupConfig(LambdaLR):
 
     def __init__(
         self,
-        optimizer: torch.optim.Optimizer,
+        optimizer: Optimizer,
         num_warmup_steps: int,
         num_training_steps: int,
         num_cycles: int = 1,
