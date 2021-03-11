@@ -67,6 +67,8 @@ def run(cfg: DictConfig) -> None:
             # extract file name without folder
             save_name = os.path.basename(os.path.normpath(best_path))
             model = model.load_from_checkpoint(best_path, hparams=hparams, cfg=cfg, strict=False)
+            if not os.path.exists('saved_models'):  # type: ignore
+                os.makedirs('saved_models')
             model_name = f'saved_models/best_{save_name}'.replace('.ckpt', '.pth')
             torch.save(model.model.state_dict(), model_name)
         else:

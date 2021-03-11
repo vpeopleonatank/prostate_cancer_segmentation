@@ -82,7 +82,7 @@ class LitSemanticSegmentation(pl.LightningModule):
         logs = {'train_loss': loss}
 
         """Log the value on GPU0 per step. Also log average of all steps at epoch_end."""
-        self.log("Train/loss", loss, on_step=True, on_epoch=True)
+        # self.log("Train/loss", loss, on_step=True, on_epoch=True)
         """Log the avg. value across all GPUs per step. Also log average of all steps at epoch_end.
         Alternately, you can use the ops 'sum' or 'avg'.
         Using sync_dist is efficient. It adds extremely minor overhead for scalar values.
@@ -90,16 +90,16 @@ class LitSemanticSegmentation(pl.LightningModule):
         # self.log("Train/loss", loss, on_step=True, on_epoch=True, sync_dist=True, sync_dist_op="avg")
 
         # Calculate Metrics
-        self.iou_train(predictions, labels)
+        # self.iou_train(predictions, labels)
         return {
             'loss': loss,
             'progress_bar': logs,
         }
 
-    def training_epoch_end(self, outputs):
-        metrics_avg = self.iou_train.compute()
-        self.log("Train/mIoU", metrics_avg.miou)
-        self.iou_train.reset()
+    # def training_epoch_end(self, outputs):
+    #     metrics_avg = self.iou_train.compute()
+    #     self.log("Train/mIoU", metrics_avg.miou)
+    #     self.iou_train.reset()
         # logs = {'train_iou': metrics_avg.miou}
         # return {
         #     'progress_bar': logs,
