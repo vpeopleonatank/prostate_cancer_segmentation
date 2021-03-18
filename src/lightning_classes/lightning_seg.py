@@ -47,11 +47,11 @@ class LitSemanticSegmentation(pl.LightningModule):
         #     [{'scheduler': scheduler, 'interval': self.cfg.scheduler.step, 'monitor': self.cfg.scheduler.monitor}],
         # )
 
-        optimizer = load_obj(self.cfg.optimizer.class_name)(self.model.parameters(), **self.cfg.optimizer.params)
-        ret_opt = {"optimizer": optimizer}
+        self.optimizer = load_obj(self.cfg.optimizer.class_name)(self.model.parameters(), **self.cfg.optimizer.params)
+        ret_opt = {"optimizer": self.optimizer}
 
         if self.cfg.scheduler.class_name != 'None':
-            sch = load_obj(self.cfg.scheduler.class_name)(optimizer, **self.cfg.scheduler.params)
+            sch = load_obj(self.cfg.scheduler.class_name)(self.optimizer, **self.cfg.scheduler.params)
 
             if sch is not None:
                 scheduler = {
@@ -68,6 +68,11 @@ class LitSemanticSegmentation(pl.LightningModule):
 
         return ret_opt
 
+
+    def _get_current_lr(self) -> torch.Tensor:
+        lr = [x["lr"] for x in self.optimizer.param_groups][0]  # type: ignore
+        return torch.Tensor([lr])[0].cuda()
+
     def training_step(self, batch, *args, **kwargs):  # type: ignore
 
         """Defines the train loop. It is independent of forward().
@@ -75,11 +80,12 @@ class LitSemanticSegmentation(pl.LightningModule):
         """
         inputs, labels = batch
         outputs = self.model(inputs)
-        predictions = outputs.argmax(dim=1)
+        # predictions = outputs.argmax(dim=1)
 
         # Calculate Loss
         loss = self.loss(outputs, labels)
         logs = {'train_loss': loss}
+        logs["lr"] = self._get_current_lr()
 
         """Log the value on GPU0 per step. Also log average of all steps at epoch_end."""
         # self.log("Train/loss", loss, on_step=True, on_epoch=True)
@@ -88,6 +94,7 @@ class LitSemanticSegmentation(pl.LightningModule):
         Using sync_dist is efficient. It adds extremely minor overhead for scalar values.
         """
         # self.log("Train/loss", loss, on_step=True, on_epoch=True, sync_dist=True, sync_dist_op="avg")
+        self.log("learning_rate", logs["lr"], ) 
 
         # Calculate Metrics
         # self.iou_train(predictions, labels)
