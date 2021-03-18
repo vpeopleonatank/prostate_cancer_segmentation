@@ -1,7 +1,8 @@
 # @package _group_
 class_name: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
 step: step
-monitor: ${training.metric}
+# monitor: ${training.metric}
+monitor: Val/mIoU
 params:
   T_0: 150
   T_mult: 3
