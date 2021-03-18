@@ -8,3 +8,5 @@ test_csv: test.csv
 
 batch_size: 32
 valid_size: 0.2
+num_workers: 8
+pin_memory: True
