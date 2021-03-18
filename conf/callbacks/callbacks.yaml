@@ -3,7 +3,7 @@ early_stopping:
   class_name: pytorch_lightning.callbacks.EarlyStopping
   params:
     # monitor: ${training.metric}
-    monitor: Train/mIoU
+    monitor: Val/mIoU
     patience: 5
     min_delta: 0.001
     verbose: True
