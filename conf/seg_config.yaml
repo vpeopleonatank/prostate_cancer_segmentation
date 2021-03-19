@@ -9,7 +9,7 @@ defaults:
   - callbacks: callbacks
   - private: default
   - augmentation: basic_augs
-  - loss: soft_crossentropy
+  - loss: cross_entropy
   - metric: iou
   - inference: basic
   # - hydra/hydra_logging: colorlog
