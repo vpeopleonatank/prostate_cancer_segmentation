@@ -1,2 +1,3 @@
 # @package _group_
 class_name: torch.nn.CrossEntropyLoss
+params:
