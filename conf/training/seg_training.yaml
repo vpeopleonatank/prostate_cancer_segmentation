@@ -1,6 +1,6 @@
 # @package _group_
 # lr: 0.0001056817476637661
-lr: 0.00006
+lr: 0.191
 metric: ${metric.metric_name}
 mode: "max"
 seed: 666

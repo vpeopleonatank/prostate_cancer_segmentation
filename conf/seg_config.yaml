@@ -4,7 +4,7 @@ defaults:
   - training: seg_training
   - logging: loggers
   - optimizer: adamw
-  - scheduler: plateau
+  - scheduler: disabled
   - model: seg_model
   - callbacks: callbacks
   - private: default
