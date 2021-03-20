@@ -80,7 +80,7 @@ class PANDADataModule(pl.LightningDataModule):
             df_masks = pd.Series(masks).to_frame()
             df_masks.columns = ["mask_file_name"]
             df_masks["image_id"] = df_masks.mask_file_name.apply(lambda x: x.split("_")[0])
-            df_train = pd.merge(train_df, df_masks, on="image_id", how="outer")
+            df_train = pd.merge(self.train_df, df_masks, on="image_id", how="outer")
             del df_masks
 
             # replace gleason score
