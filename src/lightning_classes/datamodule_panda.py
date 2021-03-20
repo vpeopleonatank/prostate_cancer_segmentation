@@ -75,8 +75,38 @@ class PANDADataModule(pl.LightningDataModule):
         train_images_absolute_path = self.BASE_PATH + self.train_image_path
         train_labels_absolute_path = self.BASE_PATH + self.train_labels_path
 
-        X = self.train_df.drop(['isup_grade'], axis=1)
-        Y = self.train_df['mask_file_name']
+        if self.cfg.datamodule.load_full_csv:
+            masks = os.listdir(train_labels_absolute_path)
+            df_masks = pd.Series(masks).to_frame()
+            df_masks.columns = ["mask_file_name"]
+            df_masks["image_id"] = df_masks.mask_file_name.apply(lambda x: x.split("_")[0])
+            df_train = pd.merge(train_df, df_masks, on="image_id", how="outer")
+            del df_masks
+
+            # replace gleason score
+            gleason_replace_dict = {0:0, 1:1, 3:2, 4:3, 5:4}
+
+            def process_gleason(gleason):
+                if gleason == 'negative': gs = (1, 1)
+                else: gs = tuple(gleason.split('+'))
+                return [gleason_replace_dict[int(g)] for g in gs]
+
+            df_train.gleason_score = df_train.gleason_score.apply(process_gleason) 
+            df_train['gleason_primary'] = ''
+            df_train['gleason_secondary'] = ''
+
+            for idx in range(0, len(df_train.gleason_score)):
+                df_train['gleason_primary'][idx] = df_train['gleason_score'][idx][0]
+                df_train['gleason_secondary'][idx] = df_train['gleason_score'][idx][1]
+                
+            df_train = df_train.drop(['gleason_score'], axis=1)
+            # remove not exist masks in csv
+            df_train.dropna(subset=['mask_file_name'], inplace=True, axis=0)
+            X = df_train.drop(['isup_grade'], axis=1)
+            Y = df_train['mask_file_name']
+        else:
+            X = self.train_df.drop(['isup_grade'], axis=1)
+            Y = self.train_df['mask_file_name']
         self.X_train, self.X_valid, self.y_train, self.y_valid = train_test_split(
             X, Y, test_size=self.cfg.datamodule.valid_size, random_state=1234
         )
