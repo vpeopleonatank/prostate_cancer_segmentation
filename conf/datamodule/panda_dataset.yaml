@@ -11,4 +11,4 @@ batch_size: 128
 valid_size: 0.2
 num_workers: 8
 pin_memory: True
-load_full_csv: True
+load_full_csv: False
