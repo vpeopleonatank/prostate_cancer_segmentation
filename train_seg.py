@@ -57,10 +57,10 @@ def run(cfg: DictConfig) -> None:
         model = load_obj(cfg.training.lightning_module_name).load_from_checkpoint(
             cfg.general.resume_from_path, hparams=hparams, cfg=cfg
         )
-    if cfg.trainer.auto_lr_find:
-        trainer.tune(model)
 
     dm = load_obj(cfg.datamodule.data_module_name)(hparams=hparams, cfg=cfg)
+    if cfg.trainer.auto_lr_find:
+        trainer.tune(model, datamodule=dm)
     trainer.fit(model, dm)
 
     if cfg.general.save_pytorch_model and cfg.general.save_best:
