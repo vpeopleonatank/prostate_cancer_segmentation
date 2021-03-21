@@ -50,6 +50,7 @@ class LitSemanticSegmentation(pl.LightningModule):
         #     [{'scheduler': scheduler, 'interval': self.cfg.scheduler.step, 'monitor': self.cfg.scheduler.monitor}],
         # )
 
+        self.learning_rate = self.cfg.optimizer.params.lr
         self.optimizer = load_obj(self.cfg.optimizer.class_name)(self.model.parameters(), **self.cfg.optimizer.params)
         ret_opt = {"optimizer": self.optimizer}
 
