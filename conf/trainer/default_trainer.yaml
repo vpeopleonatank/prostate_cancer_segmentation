@@ -9,4 +9,4 @@ num_sanity_val_steps: 0
 #gradient_clip_val: 0.0
 weights_summary: top
 progress_bar_refresh_rate: 10
-auto_lr_find: True
+auto_lr_find: False
