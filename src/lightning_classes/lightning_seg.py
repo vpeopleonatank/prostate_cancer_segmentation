@@ -82,12 +82,14 @@ class LitSemanticSegmentation(pl.LightningModule):
         """Defines the train loop. It is independent of forward().
         Don’t use any cuda or .to(device) calls in the code. PL will move the tensors to the correct device.
         """
-        inputs, labels = batch
-        outputs = self.model(inputs)
-        # predictions = outputs.argmax(dim=1)
+        tiles, masks = batch
+        for idx, (image, label) in enumerate(zip(tiles, masks)): 
+            outputs = self.model(image)
 
         # Calculate Loss
-        loss = self.loss(outputs, labels)
+            loss = self.loss(outputs, label)
+
+        # predictions = outputs.argmax(dim=1)
         logs = {'train_loss': loss}
         logs["lr"] = self._get_current_lr()
 
