@@ -7,7 +7,7 @@ train_csv: radbound_train.csv
 # train_csv: train.csv
 test_csv: test.csv
 
-batch_size: 32
+batch_size: 16
 valid_size: 0.2
 num_workers: 8
 pin_memory: True
